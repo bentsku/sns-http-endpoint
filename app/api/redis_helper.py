@@ -35,11 +35,7 @@ def add_logs_to_endpoint(token: str, log_data: str):
 
 def add_deleted_endpoint(token: str):
     r_key = _dle(token)
-    pipe = u_store.pipeline()
-    rv, exp = pipe.set(r_key, "1").expire(r_key, EXPIRE_DELETED).execute()
-    if not rv:
-        return None
-    return rv
+    return u_store.set(r_key, "1", ex=EXPIRE_DELETED)
 
 
 def is_deleted_endpoint(token: str):
