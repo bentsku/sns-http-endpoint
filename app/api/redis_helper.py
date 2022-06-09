@@ -1,5 +1,4 @@
 from app import user_store as u_store
-from secrets import token_urlsafe
 
 
 EXPIRE_LOGS = 3600

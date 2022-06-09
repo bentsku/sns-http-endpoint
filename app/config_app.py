@@ -1,6 +1,6 @@
 import os
 
-_REDIS_HOST = os.environ.get('REDIS_HOST') or 'redis-sigrun'
+_REDIS_HOST = os.environ.get('REDIS_HOST') or 'redis-sns-endpoint'
 _REDIS_PORT = int(os.environ.get('REDIS_PORT') or 6379)
 
 
