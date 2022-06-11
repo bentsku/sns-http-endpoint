@@ -1,7 +1,7 @@
 import ujson
 import requests
 
-from flask import request, Response
+from flask import request, Response, current_app
 from app.api import bp
 from app.api import redis_helper as rd
 from app.api.errors import bad_request
@@ -24,15 +24,26 @@ def sns_endpoint(short_uid):
 
     print(request.headers)
     if "X-Amz-Sns-Message-Type" in request.headers:
+        body = request.data if "x-amz-sns-rawdelivery" in request.headers else request.get_json(force=True)
         log = {
             "headers": dict(request.headers.items()),
-            "body": request.get_json(force=True)
+            "body": body
         }
         rd.add_logs_to_endpoint(token=short_uid, log_data=ujson.dumps(log))
         if request.headers["X-Amz-Sns-Message-Type"] == "SubscriptionConfirmation":
-            body = request.get_json(force=True)
-            req = requests.get(body["SubscribeURL"])
-            print(req.content)
+            rd.add_endpoint_as_pending(short_uid)
+            if current_app.config["SNS_AUTO_SUBSCRIBE"]:
+                body = request.get_json(force=True)
+                try:
+                    req = requests.get(body["SubscribeURL"])
+                except requests.ConnectionError as e:
+                    if "localhost" in str(e):
+                        return bad_request("The SubscribeURL links to localhost domain, unreachable")
+                    raise
+                rd.del_endpoint_as_pending(short_uid)
+                print(req.content)
+        else:
+            rd.del_endpoint_as_pending(short_uid)
 
     print(request.data)
 
@@ -49,3 +60,9 @@ def delete_sns_endpoint(short_uid):
 def sns_endpoint_logs(short_uid):
     logs = rd.get_logs_from_endpoint(short_uid)
     return jsonify({'logs': logs})
+
+
+@bp.route('/pending-subscriptions', methods=['GET'])
+def sns_endpoint_pending_subscriptions():
+    pending_subs = rd.get_all_pending()
+    return jsonify({'pending_subscriptions': pending_subs})
