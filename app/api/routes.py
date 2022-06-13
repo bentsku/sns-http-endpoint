@@ -24,10 +24,10 @@ def sns_endpoint(short_uid):
 
     print(request.headers)
     if "X-Amz-Sns-Message-Type" in request.headers:
-        body = request.data if "x-amz-sns-rawdelivery" in request.headers else request.get_json(force=True)
+        body = request.data.decode() if "x-amz-sns-rawdelivery" in request.headers else request.get_json(force=True)
         log = {
             "headers": dict(request.headers.items()),
-            "body": body.decode()
+            "body": body
         }
         rd.add_logs_to_endpoint(token=short_uid, log_data=ujson.dumps(log))
         if request.headers["X-Amz-Sns-Message-Type"] == "SubscriptionConfirmation":
