@@ -62,6 +62,12 @@ def sns_endpoint_logs(short_uid):
     return jsonify({'logs': logs})
 
 
+@bp.route('/endpoint-<string:short_uid>/poll-logs', methods=['GET'])
+def sns_endpoint_poll_logs(short_uid):
+    logs = rd.get_len_logs_from_endpoint(short_uid)
+    return jsonify({'logs_length': logs})
+
+
 @bp.route('/pending-subscriptions', methods=['GET'])
 def sns_endpoint_pending_subscriptions():
     pending_subs = rd.get_all_pending()

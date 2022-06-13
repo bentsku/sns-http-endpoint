@@ -9,15 +9,15 @@ SESSION_LENGTH = 32
 ALL_PENDING_KEY = 'global:pending'
 
 
-def _e(token: str):
+def _e(token: str) -> str:
     return f"endpoint:{token}"
 
 
-def _dle(token: str):
+def _dle(token: str) -> str:
     return f"endpoint:{token}:deleted"
 
 
-def _pe(token: str):
+def _pe(token: str) -> str:
     return f"endpoint:{token}:pending"
 
 
@@ -28,6 +28,11 @@ def get_logs_from_endpoint(token: str):
     if not rv:
         return None
     return rv
+
+
+def get_len_logs_from_endpoint(token: str) -> int:
+    r_key = _e(token)
+    return u_store.llen(r_key)
 
 
 def add_logs_to_endpoint(token: str, log_data: str):
