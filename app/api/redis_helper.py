@@ -77,9 +77,9 @@ def get_all_pending():
     data_resp = pipe.execute()
     pending_endpoints = []
     expired = []
-    for index, pending_endpoint_uid in enumerate(data_resp):
-        if pending_endpoint_uid:
-            pending_endpoints.append(pending_endpoint_uid)
+    for index, pending_endpoint_status in enumerate(data_resp):
+        if pending_endpoint_status == "1":
+            pending_endpoints.append(pending_list[index])
         else:
             expired.append(pending_list[index])
 
