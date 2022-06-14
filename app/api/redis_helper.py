@@ -2,7 +2,7 @@ from app import user_store as u_store
 
 
 EXPIRE_LOGS = 3600
-EXPIRE_DELETED = 3600 / 4
+EXPIRE_DELETED = 3600 // 4
 # time for AWS to delete a pending subscription that hasn't been confirmed
 EXPIRE_PENDING = 3600 * 24 * 3
 SESSION_LENGTH = 32
